@@ -1,7 +1,7 @@
 # name: Discourse Sitemap
 # about:
 # version: 1.1
-# authors: DiscourseHosting.com, vinothkannans 
+# authors: DiscourseHosting.com, vinothkannans
 # url: https://github.com/discoursehosting/discourse-sitemap
 
 PLUGIN_NAME = "discourse-sitemap".freeze
@@ -29,6 +29,10 @@ after_initialize do
       query = query.created_since(since) unless since.nil?
       query = query.order(created_at: :desc)
       query
+    end
+
+    def categories_query
+    	Category.where(read_restricted: false)
     end
 
     def index
@@ -66,11 +70,17 @@ after_initialize do
       offset = (page - 1) * sitemap_size
 
       @output = Rails.cache.fetch("sitemap/#{page}/#{sitemap_size}", expires_in: 24.hours) do
-        @topics = Array.new
+        @topics, @categories = [], []
+
+				categories_query.pluck(:id, :slug, :updated_at).each do |c|
+					@categories.push c
+				end
+
         topics_query.limit(sitemap_size).offset(offset).pluck(:id, :slug, :last_posted_at, :updated_at).each do |t|
           t[2] = t[3] if t[2].nil?
           @topics.push t
         end
+
         render :default, content_type: 'text/xml; charset=UTF-8'
       end
       render :plain => @output, content_type: 'text/xml; charset=UTF-8' unless performed?

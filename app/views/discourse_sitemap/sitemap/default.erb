@@ -6,6 +6,12 @@
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd
         http://www.google.com/schemas/sitemap-image/1.1
         http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
+    <% @categories.each do |category| %>
+    <url>
+        <loc><%= Discourse.base_url %>/c/<%= category[1] %></loc>
+        <lastmod><%= category[2].xmlschema %></lastmod>
+    </url>
+    <% end %>
     <% @topics.each do |topic| %>
     <url>
         <loc><%= Discourse.base_url %>/t/<%= topic[1] %>/<%= topic[0] %></loc>
