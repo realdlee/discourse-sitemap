@@ -8,8 +8,8 @@
         http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
     <% @categories.each do |category| %>
     <url>
-        <loc><%= Discourse.base_url %>/c/<%= category[1] %></loc>
-        <lastmod><%= category[2].xmlschema %></lastmod>
+        <loc><%= Discourse.base_url_no_prefix %><%= category[:path] %></loc>
+        <lastmod><%= category[:updated_at].xmlschema %></lastmod>
     </url>
     <% end %>
     <% @topics.each do |topic| %>

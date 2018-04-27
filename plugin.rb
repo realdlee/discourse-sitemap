@@ -72,9 +72,12 @@ after_initialize do
       @output = Rails.cache.fetch("sitemap/#{page}/#{sitemap_size}", expires_in: 24.hours) do
         @topics, @categories = [], []
 
-				categories_query.pluck(:id, :slug, :updated_at).each do |c|
-					@categories.push c
-				end
+      @categories = Category.where(read_restricted: false).map do |category|
+        {
+          path: category.url,
+          updated_at: category.updated_at
+        }
+      end
 
         topics_query.limit(sitemap_size).offset(offset).pluck(:id, :slug, :last_posted_at, :updated_at).each do |t|
           t[2] = t[3] if t[2].nil?
